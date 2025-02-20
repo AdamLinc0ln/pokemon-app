@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import PokemonSearch from './components/PokemonSearch';
+import { Pokemon } from './types';
 
-function App() {
+const App: React.FC = () => {
+  const [pokemon, setPokemon] = useState<Pokemon | null>(null);
+  const [inputNumber, setInputNumber] = useState<string>('');
+
+  const fetchPokemon = async (id: string) => {
+    if (!id) return;
+    try {
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+      const data: Pokemon = await response.json();
+      console.log(data); // Log the entire response data
+      setPokemon(data);
+    } catch (error) {
+      console.error('Error fetching Pokémon:', error);
+    }
+  };
+
+  const handleRandomPokemon = () => {
+    const randomId = Math.floor(Math.random() * 1025) + 1;
+    fetchPokemon(randomId.toString());
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ textAlign: 'center', padding: '20px' }}>
+      <h1>Pokémon Viewer</h1>
+      <PokemonSearch
+        fetchPokemon={fetchPokemon}
+        handleRandomPokemon={handleRandomPokemon}
+        pokemon={pokemon}
+        inputNumber={inputNumber}
+        setInputNumber={setInputNumber}
+      />
     </div>
   );
-}
+};
 
 export default App;
+
