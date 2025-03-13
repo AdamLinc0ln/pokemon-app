@@ -29,7 +29,7 @@ function App() {
 
   // Function to fetch a random Pokémon (1-151 for Gen 1)
   const handleRandomPokemon = () => {
-    const randomId = Math.floor(Math.random() * 151) + 1;
+    const randomId = Math.floor(Math.random() * 1025) + 1;
     fetchPokemon(randomId.toString());
   };
 
