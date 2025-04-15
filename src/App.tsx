@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 interface Pokemon {
+  id: number;
   name: string;
   sprites: { front_default: string; front_shiny: string };
   types: { type: { name: string } }[];
@@ -11,10 +12,14 @@ interface Pokemon {
 function App() {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [inputNumber, setInputNumber] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Function to fetch Pokémon by ID
   const fetchPokemon = async (id: string) => {
     if (!id) return;
+    setLoading(true);
+    setError(null);
     try {
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
       const data: Pokemon = await response.json();
@@ -24,6 +29,9 @@ function App() {
       setPokemon(data);
     } catch (error) {
       console.error("Error fetching Pokémon:", error);
+      setError("Failed to fetch Pokémon. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,10 +57,14 @@ function App() {
       <button onClick={() => fetchPokemon(inputNumber)}>Search</button>
       <button onClick={handleRandomPokemon}>Random</button>
 
+      {/* Loading and Error Messages */}
+      {loading && <p>Loading...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
       {/* Pokémon Display */}
-      {pokemon && (
+      {pokemon && !loading && (
         <div>
-          <h2>{pokemon.name.toUpperCase()}</h2>
+          <h2>{pokemon.name.toUpperCase()} #: {pokemon.id}</h2>
           
           {/* Normal & Shiny Sprites */}
           <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
